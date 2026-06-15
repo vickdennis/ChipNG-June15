@@ -12,16 +12,21 @@ import Pricing from './components/Pricing';
 import Footer from './components/Footer';
 import AuthStart from './components/auth/AuthStart';
 import OnboardingFlow from './components/auth/OnboardingFlow';
+import Dashboard from './components/dashboard/Dashboard';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding' | 'dashboard'>('home');
 
   if (currentView === 'auth') {
     return <AuthStart onContinue={() => setCurrentView('onboarding')} onBack={() => setCurrentView('home')} />;
   }
 
   if (currentView === 'onboarding') {
-    return <OnboardingFlow onBack={() => setCurrentView('auth')} onComplete={() => setCurrentView('home')} />;
+    return <OnboardingFlow onBack={() => setCurrentView('auth')} onComplete={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'dashboard') {
+    return <Dashboard />;
   }
 
   return (
