@@ -3,7 +3,7 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../../supabaseClient';
 
-export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => void, onComplete: () => void }) {
+export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: { onBack: () => void, onComplete: () => void, onSignupSuccess: (email: string, msg: string) => void }) {
   const [step, setStep] = useState(1);
   const totalSteps = 4;
   
@@ -45,7 +45,7 @@ export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => v
         setStep(prev => prev + 1);
       } else {
         setLoading(true);
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: formData.contact,
           password: formData.password,
           options: {
@@ -60,7 +60,11 @@ export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => v
         if (error) {
           setErrorMsg(error.message);
         } else {
-          window.location.href = '/';
+          if (!data.session) {
+            onSignupSuccess(formData.contact, "Check your email and confirm your account before logging in.");
+          } else {
+            window.location.href = '/';
+          }
         }
       }
     }

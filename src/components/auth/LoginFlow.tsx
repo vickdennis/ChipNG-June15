@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
-export default function LoginFlow({ onBack }: { onBack: () => void }) {
-  const [email, setEmail] = useState('');
+export default function LoginFlow({ onBack, initialEmail = '', message = '' }: { onBack: () => void, initialEmail?: string, message?: string }) {
+  const [email, setEmail] = useState(initialEmail);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -74,6 +74,12 @@ export default function LoginFlow({ onBack }: { onBack: () => void }) {
                 </button>
               </div>
             </div>
+
+            {message && !errorMsg && (
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <p className="text-emerald-400 text-sm font-medium">{message}</p>
+              </div>
+            )}
 
             {errorMsg && (
               <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl">

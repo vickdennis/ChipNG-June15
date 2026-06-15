@@ -125,7 +125,7 @@ export default function AddLinkDrawer({ isOpen, onClose }: { isOpen: boolean; on
                 {isExpanded && (
                   <div className="grid grid-cols-4 gap-4 mt-3">
                     {(searchQuery ? filteredPlatforms : cat.platforms).map((platform) => {
-                      const Icon = platform.icon;
+                      const Icon = platform.icon as any;
                       // Snapchat and Kick need dark icons for contrast if bg is entirely light,
                       // but user requested solid white. We will stick to white for everything except if explicitly bad.
                       // Wait, snapchat yellow with white icon might be invisible, but the prompt says:

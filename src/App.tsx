@@ -18,35 +18,49 @@ import { supabase } from './supabaseClient';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding' | 'dashboard' | 'login'>('home');
+  const [initialEmail, setInitialEmail] = useState('');
+  const [loginMessage, setLoginMessage] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setCurrentView('dashboard');
       }
+      setIsInitializing(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setCurrentView('dashboard');
       } else {
-        setCurrentView('home');
+        setCurrentView(prev => prev === 'dashboard' ? 'home' : prev);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  if (isInitializing) return null;
+
   if (currentView === 'auth') {
     return <AuthStart onContinue={() => setCurrentView('onboarding')} onBack={() => setCurrentView('home')} onLogin={() => setCurrentView('login')} />;
   }
 
   if (currentView === 'login') {
-    return <LoginFlow onBack={() => setCurrentView('auth')} />;
+    return <LoginFlow onBack={() => setCurrentView('auth')} initialEmail={initialEmail} message={loginMessage} />;
   }
 
   if (currentView === 'onboarding') {
-    return <OnboardingFlow onBack={() => setCurrentView('auth')} onComplete={() => setCurrentView('dashboard')} />;
+    return <OnboardingFlow 
+      onBack={() => setCurrentView('auth')} 
+      onComplete={() => setCurrentView('dashboard')} 
+      onSignupSuccess={(email, msg) => {
+        setInitialEmail(email);
+        setLoginMessage(msg);
+        setCurrentView('login');
+      }}
+    />;
   }
 
   if (currentView === 'dashboard') {
