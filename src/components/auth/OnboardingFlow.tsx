@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase } from '../../supabaseClient';
 
 export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => void, onComplete: () => void }) {
   const [step, setStep] = useState(1);
@@ -15,6 +16,8 @@ export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => v
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const updateForm = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -35,12 +38,30 @@ export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => v
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (isStepValid()) {
+      setErrorMsg('');
       if (step < totalSteps) {
         setStep(prev => prev + 1);
       } else {
-        onComplete(); // Move back to main view
+        setLoading(true);
+        const { error } = await supabase.auth.signUp({
+          email: formData.contact,
+          password: formData.password,
+          options: {
+            data: {
+              business_name: formData.businessName,
+              username: formData.username
+            }
+          }
+        });
+        setLoading(false);
+
+        if (error) {
+          setErrorMsg(error.message);
+        } else {
+          window.location.href = '/';
+        }
       }
     }
   };
@@ -172,17 +193,23 @@ export default function OnboardingFlow({ onBack, onComplete }: { onBack: () => v
           </AnimatePresence>
         </div>
 
+        {errorMsg && (
+          <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm font-medium">{errorMsg}</p>
+          </div>
+        )}
+
         <div className="pb-8 pt-4">
           <button
             onClick={handleNext}
-            disabled={!isStepValid()}
+            disabled={!isStepValid() || loading}
             className={`w-full py-4 rounded-full font-bold text-lg transition-all ${
-              isStepValid() 
+              isStepValid() && !loading
                 ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/25' 
                 : 'bg-slate-800 text-slate-500 cursor-not-allowed'
             }`}
           >
-            {step === totalSteps ? 'Create Account' : 'CONTINUE'}
+            {loading ? 'Creating...' : step === totalSteps ? 'Create Account' : 'CONTINUE'}
           </button>
         </div>
       </div>

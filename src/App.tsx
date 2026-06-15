@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -12,13 +12,37 @@ import Pricing from './components/Pricing';
 import Footer from './components/Footer';
 import AuthStart from './components/auth/AuthStart';
 import OnboardingFlow from './components/auth/OnboardingFlow';
+import LoginFlow from './components/auth/LoginFlow';
 import Dashboard from './components/dashboard/Dashboard';
+import { supabase } from './supabaseClient';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding' | 'dashboard'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding' | 'dashboard' | 'login'>('home');
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setCurrentView('dashboard');
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setCurrentView('dashboard');
+      } else {
+        setCurrentView('home');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   if (currentView === 'auth') {
-    return <AuthStart onContinue={() => setCurrentView('onboarding')} onBack={() => setCurrentView('home')} />;
+    return <AuthStart onContinue={() => setCurrentView('onboarding')} onBack={() => setCurrentView('home')} onLogin={() => setCurrentView('login')} />;
+  }
+
+  if (currentView === 'login') {
+    return <LoginFlow onBack={() => setCurrentView('auth')} />;
   }
 
   if (currentView === 'onboarding') {

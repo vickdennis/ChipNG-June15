@@ -1,6 +1,6 @@
 import { ArrowLeft, Mail, Smartphone } from 'lucide-react';
 
-export default function AuthStart({ onContinue, onBack }: { onContinue: (method: string) => void, onBack: () => void }) {
+export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue: (method: string) => void, onBack: () => void, onLogin: () => void }) {
   return (
     <div className="min-h-screen bg-[#0e1117] text-white flex flex-col pt-12 px-6 pb-8">
       <div className="max-w-md w-full mx-auto flex-1 flex flex-col relative">
@@ -43,7 +43,7 @@ export default function AuthStart({ onContinue, onBack }: { onContinue: (method:
             By continuing, you agree to our <a href="#terms" className="underline hover:text-white">Terms of Service</a> and acknowledge you've read our <a href="#privacy" className="underline hover:text-white">Privacy Policy</a>.
           </p>
           <p className="text-slate-300 font-medium">
-            Already have an account? <button className="text-white font-bold ml-1 hover:underline">Log in</button>
+            Already have an account? <button onClick={onLogin} className="text-white font-bold ml-1 hover:underline">Log in</button>
           </p>
         </div>
       </div>
