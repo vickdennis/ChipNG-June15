@@ -1,0 +1,6 @@
+{
+  "name": "CHIP NG Backend Setup",
+  "description": "Supabase SQL schema and authentication setup guidelines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
