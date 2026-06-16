@@ -7,45 +7,23 @@ interface SmartphoneFrameProps {
   onAddSocialClick?: () => void;
   onSocialLinkClick?: (link: any) => void;
   isPublicView?: boolean;
+  profileName?: string;
 }
 
-export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, onSocialLinkClick, isPublicView = false }: SmartphoneFrameProps) {
-  const username = "nfcng";
+export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, onSocialLinkClick, isPublicView = false, profileName }: SmartphoneFrameProps) {
+  const username = profileName || "username";
+  const displayName = profileName ? profileName.toUpperCase() : "Your Name";
   const userUrl = `chipng.com/${username}`;
 
   return (
-    <div className={`flex flex-col items-center justify-center p-8 bg-slate-50 min-h-screen ${!isPublicView ? 'border-l border-slate-200' : ''}`}>
-      {!isPublicView && (
-        <div className="mb-6 flex items-center justify-between w-full max-w-[320px]">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-600 bg-white px-3 py-1.5 rounded-full shadow-sm border border-slate-200">
-            <span>{userUrl}</span>
-            <a href={`/${username}`} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:text-indigo-700">
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          </div>
-          <button className="p-2 bg-white rounded-full shadow-sm border border-slate-200 hover:bg-slate-50 text-slate-800 transition-colors">
-            <Share className="w-4 h-4" />
-          </button>
-        </div>
-      )}
-
-      <div className={`${isPublicView ? 'w-full max-w-md h-full min-h-screen rounded-none border-none shadow-none' : 'w-[320px] h-[650px] relative'}`}>
-        {/* Hardware Frame */}
-        {!isPublicView && (
-          <div className="absolute inset-0 border-[10px] border-black rounded-[2.5rem] shadow-2xl pointer-events-none z-10">
-             {/* Notch */}
-             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl"></div>
-          </div>
-        )}
-
-        {/* Inner Content Component (Live View) */}
-        <div className={`${isPublicView ? 'min-h-screen pb-12' : 'absolute inset-0 rounded-[2rem]'} bg-black overflow-y-auto style-scrollbar text-white relative flex flex-col font-sans`}>
+    <div className={`flex flex-col items-center justify-center min-h-screen bg-black ${!isPublicView ? '' : ''}`}>
+      <div className={`w-full max-w-md h-full min-h-screen bg-black relative flex flex-col font-sans text-white`}>
           
           {/* Header Banner */}
           <div className="relative w-full h-64 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden">
              <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70">
-                <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-black">
-                  NFC<span className="text-5xl mt-8">.NG</span>
+                <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-black uppercase">
+                  {username}
                 </div>
                 <div className="absolute top-4 right-8 w-24 h-24 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
                 <div className="absolute top-8 right-12 w-16 h-16 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
@@ -71,8 +49,8 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
           </div>
 
           <div className="px-5 flex flex-col items-center relative z-10 -mt-6">
-            <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">NFC NG</h1>
-            <p className="text-[#888888] text-sm mb-4">@nfcng</p>
+            <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">{isPublicView ? displayName : 'Your Name'}</h1>
+            <p className="text-[#888888] text-sm mb-4">{`@${username}`}</p>
 
             <SocialBar 
                links={socialLinks} 
@@ -100,7 +78,7 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
               
               <div className="bg-[#1C1C1E] rounded-3xl p-5 border border-white/5 space-y-3">
                 {isPublicView ? (
-                   <p className="text-white text-[0.95rem] font-medium text-center py-2">Check out @nfc.ng on IG</p>
+                   <p className="text-white text-[0.95rem] font-medium text-center py-2">Welcome to {displayName}'s profile</p>
                 ) : (
                   <>
                     <div className="flex items-center justify-between mb-4">
@@ -117,7 +95,7 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                         <div className="w-5 h-5 bg-white rounded-full absolute right-0.5 top-0.5 shadow-sm"></div>
                       </button>
                     </div>
-                    <p className="text-white text-[0.95rem] font-medium text-center py-2">Check out @nfc.ng on IG</p>
+                    <p className="text-white text-[0.95rem] font-medium text-center py-2">Welcome to {displayName}'s profile</p>
                   </>
                 )}
               </div>
@@ -132,7 +110,7 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                       className="bg-transparent text-white px-4 py-3 flex-1 focus:outline-none placeholder-blue-500/80 font-medium"
                     />
                     <button className="bg-stone-500/30 text-white font-bold text-sm px-5 rounded-full flex items-center gap-2 hover:bg-stone-500/50 transition-colors shrink-0">
-                      Connect with <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[0.5rem] text-black font-bold">NFC</div>
+                      Connect
                     </button>
                   </>
                 ) : (
@@ -192,7 +170,7 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                 </div>
                 <div className="w-full mt-6 bg-[#1a1a1c] border border-stone-800 rounded-3xl p-5 min-h-[150px] relative">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[0.6rem] text-black font-bold border-2 border-stone-800 shrink-0">NFC<sub className="-mb-1">.NG</sub></div>
+                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[0.6rem] text-black font-bold border-2 border-stone-800 shrink-0 uppercase">{username.substring(0,3)}</div>
                     <span className="text-stone-400 text-sm">What's happening?</span>
                   </div>
                   <button className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 flex items-center justify-center shadow-lg">
@@ -210,6 +188,5 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
           </div>
         </div>
       </div>
-    </div>
   );
 }
