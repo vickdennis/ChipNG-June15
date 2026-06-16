@@ -10,7 +10,7 @@ export default function PublicProfile() {
 
   return (
     <div className="min-h-screen bg-black flex justify-center">
-       <SmartphoneFrame isPublicView={true} socialLinks={socialLinks} profileName={username} />
+       <SmartphoneFrame isPublicView={true} socialLinks={socialLinks} username={username} displayName={username} />
     </div>
   );
 }

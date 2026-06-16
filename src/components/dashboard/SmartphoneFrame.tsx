@@ -7,33 +7,37 @@ interface SmartphoneFrameProps {
   onAddSocialClick?: () => void;
   onSocialLinkClick?: (link: any) => void;
   isPublicView?: boolean;
-  profileName?: string;
+  
+  username?: string;
+  displayName?: string;
+  bio?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  bgImage?: string | null;
+
   onEditClick?: () => void;
   onSaveClick?: () => void;
 }
 
-export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, onSocialLinkClick, isPublicView = false, profileName, onEditClick, onSaveClick }: SmartphoneFrameProps) {
-  const defaultUsername = profileName || "username";
-  const defaultDisplayName = profileName ? profileName.toUpperCase() : "Your Name";
-  
-  const [username, setUsername] = useState(defaultUsername);
-  const [displayName, setDisplayName] = useState(defaultDisplayName);
-  const [bio, setBio] = useState(`Welcome to ${defaultDisplayName}'s profile`);
-  const [phone, setPhone] = useState('08100764154');
-  const [bgImage, setBgImage] = useState<string | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setBgImage(url);
-    }
-  };
+export default function SmartphoneFrame({ 
+  socialLinks = [], 
+  onAddSocialClick, 
+  onSocialLinkClick, 
+  isPublicView = false, 
+  username = "username",
+  displayName = "Your Name",
+  bio = "Welcome to my profile",
+  phone = "08100764154",
+  email = "",
+  address = "",
+  bgImage = null,
+  onEditClick, 
+  onSaveClick 
+}: SmartphoneFrameProps) {
 
   const downloadVCard = () => {
-    const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nTEL:${phone}\nEND:VCARD`;
+    const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nTEL:${phone}\nEMAIL:${email}\nADR:;;${address};;;\nEND:VCARD`;
     const blob = new Blob([vcard], { type: 'text/vcard' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -106,10 +110,9 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                    <Check className="w-5 h-5 text-white/70" />
                  </button>
                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <button onClick={() => fileInputRef.current?.click()} className="bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/40 transition-colors flex items-center gap-2">
+                    <button onClick={onEditClick} className="bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/40 transition-colors flex items-center gap-2">
                        Change Photo or Video
                     </button>
-                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleImageUpload} />
                  </div>
                  {/* Blue concentric waves */}
                  <div className="absolute -top-12 -right-12 w-64 h-64 pointer-events-none opacity-40">
@@ -123,25 +126,20 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
 
           <div className="px-5 flex flex-col items-center relative z-10 -mt-6">
             {!isPublicView ? (
-              <input 
-                value={displayName}
-                onChange={e => setDisplayName(e.target.value)}
-                className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center outline-none focus:ring-2 focus:ring-white/20 rounded px-2"
-                placeholder="Your Name"
-              />
+              <div 
+                className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center px-2 cursor-text"
+                onClick={onEditClick}
+              >
+                {displayName}
+              </div>
             ) : (
               <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">{displayName}</h1>
             )}
 
             {!isPublicView ? (
-              <div className="flex items-center mb-4">
+              <div className="flex items-center mb-4 cursor-text" onClick={onEditClick}>
                 <span className="text-[#888888] text-sm">@</span>
-                <input 
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  className="text-[#888888] text-sm bg-transparent border-none outline-none focus:ring-2 focus:ring-white/20 rounded px-1 w-24"
-                  placeholder="username"
-                />
+                <span className="text-[#888888] text-sm bg-transparent px-1">{username}</span>
               </div>
             ) : (
               <p className="text-[#888888] text-sm mb-4">{`@${username}`}</p>
@@ -202,12 +200,9 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                           <div className="w-6 h-6 bg-white rounded-full absolute right-0 top-0 shadow-sm"></div>
                         </button>
                       </div>
-                      <textarea 
-                        value={bio}
-                        onChange={e => setBio(e.target.value)}
-                        className="text-[#888888] text-sm font-medium bg-transparent border-none outline-none w-full resize-none"
-                        rows={2}
-                      />
+                      <div className="text-[#888888] text-sm font-medium bg-transparent border-none w-full whitespace-pre-wrap cursor-text" onClick={onEditClick}>
+                        {bio}
+                      </div>
                     </>
                   )}
                 </div>
@@ -264,12 +259,12 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                           <div className="w-6 h-6 bg-white rounded-full absolute right-0 top-0 shadow-sm"></div>
                         </button>
                       </div>
-                      <input 
-                         value={phone}
-                         onChange={e => setPhone(e.target.value)}
-                         className="text-[#888888] text-sm font-medium bg-transparent border-none outline-none w-full"
-                         placeholder="Phone number"
-                      />
+                      <div 
+                         className="text-[#888888] text-sm font-medium bg-transparent w-full mt-2 cursor-text"
+                         onClick={onEditClick}
+                      >
+                         {phone || "Phone number"}
+                      </div>
                     </div>
                   </>
                 ) : (
