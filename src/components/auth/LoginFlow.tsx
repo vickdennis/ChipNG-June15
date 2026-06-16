@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../supabaseClient';
 
 export default function LoginFlow({ onBack, initialEmail = '', message = '' }: { onBack: () => void, initialEmail?: string, message?: string }) {
@@ -8,6 +9,7 @@ export default function LoginFlow({ onBack, initialEmail = '', message = '' }: {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const isFormValid = email.length > 3 && password.length >= 6;
 
@@ -18,7 +20,7 @@ export default function LoginFlow({ onBack, initialEmail = '', message = '' }: {
     setLoading(true);
     setErrorMsg('');
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -27,8 +29,8 @@ export default function LoginFlow({ onBack, initialEmail = '', message = '' }: {
 
     if (error) {
       setErrorMsg(error.message);
-    } else {
-      window.location.href = '/';
+    } else if (data.session) {
+      navigate('/dashboard');
     }
   };
 

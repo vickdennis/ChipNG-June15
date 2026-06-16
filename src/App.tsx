@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Features from './components/Features';
@@ -16,60 +17,38 @@ import LoginFlow from './components/auth/LoginFlow';
 import Dashboard from './components/dashboard/Dashboard';
 import { supabase } from './supabaseClient';
 
-export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'auth' | 'onboarding' | 'dashboard' | 'login'>('home');
-  const [initialEmail, setInitialEmail] = useState('');
-  const [loginMessage, setLoginMessage] = useState('');
-  const [isInitializing, setIsInitializing] = useState(true);
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setCurrentView('dashboard');
-      }
-      setIsInitializing(false);
+      setAuthenticated(!!session);
+      setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setCurrentView('dashboard');
-      } else {
-        setCurrentView(prev => prev === 'dashboard' ? 'home' : prev);
-      }
+      setAuthenticated(!!session);
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  if (isInitializing) return null;
+  if (loading) return null;
 
-  if (currentView === 'auth') {
-    return <AuthStart onContinue={() => setCurrentView('onboarding')} onBack={() => setCurrentView('home')} onLogin={() => setCurrentView('login')} />;
+  if (!authenticated) {
+    return <Navigate to="/login" replace />;
   }
 
-  if (currentView === 'login') {
-    return <LoginFlow onBack={() => setCurrentView('auth')} initialEmail={initialEmail} message={loginMessage} />;
-  }
+  return <>{children}</>;
+}
 
-  if (currentView === 'onboarding') {
-    return <OnboardingFlow 
-      onBack={() => setCurrentView('auth')} 
-      onComplete={() => setCurrentView('dashboard')} 
-      onSignupSuccess={(email, msg) => {
-        setInitialEmail(email);
-        setLoginMessage(msg);
-        setCurrentView('login');
-      }}
-    />;
-  }
-
-  if (currentView === 'dashboard') {
-    return <Dashboard />;
-  }
-
+function LandingPage() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
-      <Navbar onAuth={() => setCurrentView('auth')} />
+      <Navbar onAuth={() => navigate('/auth')} />
       <main>
         <Hero />
         <Features />
@@ -78,5 +57,52 @@ export default function App() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function AuthStartWrapper() {
+  const navigate = useNavigate();
+  return <AuthStart onContinue={() => navigate('/onboarding')} onBack={() => navigate('/')} onLogin={() => navigate('/login')} />;
+}
+
+function LoginFlowWrapper() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { email?: string; message?: string } | null;
+  
+  return <LoginFlow 
+    onBack={() => navigate(-1)} 
+    initialEmail={state?.email || ''} 
+    message={state?.message || ''} 
+  />;
+}
+
+function OnboardingFlowWrapper() {
+  const navigate = useNavigate();
+  return <OnboardingFlow 
+      onBack={() => navigate(-1)} 
+      onComplete={() => navigate('/dashboard')} 
+      onSignupSuccess={(email, msg) => {
+        navigate('/login', { state: { email, message: msg } });
+      }}
+    />;
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/auth" element={<AuthStartWrapper />} />
+        <Route path="/login" element={<LoginFlowWrapper />} />
+        <Route path="/onboarding" element={<OnboardingFlowWrapper />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

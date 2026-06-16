@@ -63,7 +63,7 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
           if (!data.session) {
             onSignupSuccess(formData.contact, "Check your email and confirm your account before logging in.");
           } else {
-            window.location.href = '/';
+            onComplete();
           }
         }
       }
