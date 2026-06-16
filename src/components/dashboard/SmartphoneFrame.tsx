@@ -1,5 +1,5 @@
-import React from 'react';
-import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical, Download } from 'lucide-react';
 import SocialBar from './SocialBar';
 
 interface SmartphoneFrameProps {
@@ -13,8 +13,38 @@ interface SmartphoneFrameProps {
 }
 
 export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, onSocialLinkClick, isPublicView = false, profileName, onEditClick, onSaveClick }: SmartphoneFrameProps) {
-  const username = profileName || "username";
-  const displayName = profileName ? profileName.toUpperCase() : "Your Name";
+  const defaultUsername = profileName || "username";
+  const defaultDisplayName = profileName ? profileName.toUpperCase() : "Your Name";
+  
+  const [username, setUsername] = useState(defaultUsername);
+  const [displayName, setDisplayName] = useState(defaultDisplayName);
+  const [bio, setBio] = useState(`Welcome to ${defaultDisplayName}'s profile`);
+  const [phone, setPhone] = useState('08100764154');
+  const [bgImage, setBgImage] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setBgImage(url);
+    }
+  };
+
+  const downloadVCard = () => {
+    const vcard = `BEGIN:VCARD\nVERSION:3.0\nFN:${displayName}\nTEL:${phone}\nEND:VCARD`;
+    const blob = new Blob([vcard], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${displayName.replace(/\s+/g, '_')}_Contact.vcf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const userUrl = `chipng.com/${username}`;
 
   return (
@@ -24,7 +54,12 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
           {/* Navigation Header for View Mode */}
           {isPublicView && (
             <div className="flex items-center justify-between px-5 py-4 w-full bg-black shrink-0 relative z-20">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
+                onClick={() => {
+                  navigator.clipboard.writeText(`https://chipng.com/${username}`);
+                }}
+              >
                 <Link2 className="w-4 h-4" />
                 <span className="text-sm font-semibold">Bio Link</span>
               </button>
@@ -46,15 +81,20 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
           )}
 
           {/* Header Banner */}
-          <div className={`${isPublicView ? 'mt-4 ' : ''}relative w-full h-64 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden`}>
-             <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70">
-                <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-black uppercase">
-                  {username}
-                </div>
-                <div className="absolute top-4 right-8 w-24 h-24 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
-                <div className="absolute top-8 right-12 w-16 h-16 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
-                <div className="absolute top-12 right-16 w-8 h-8 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
-             </div>
+          <div 
+            className={`${isPublicView ? 'mt-4 ' : ''}relative w-full h-64 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden`}
+            style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+          >
+             {!bgImage && (
+               <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70">
+                  <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-black uppercase">
+                    {username}
+                  </div>
+                  <div className="absolute top-4 right-8 w-24 h-24 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
+                  <div className="absolute top-8 right-12 w-16 h-16 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
+                  <div className="absolute top-12 right-16 w-8 h-8 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
+               </div>
+             )}
 
              {/* Banner Action Buttons */}
              {!isPublicView && (
@@ -66,9 +106,10 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                    <Check className="w-5 h-5 text-white/70" />
                  </button>
                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/40 transition-colors flex items-center gap-2">
+                    <button onClick={() => fileInputRef.current?.click()} className="bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/40 transition-colors flex items-center gap-2">
                        Change Photo or Video
-                    </div>
+                    </button>
+                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleImageUpload} />
                  </div>
                  {/* Blue concentric waves */}
                  <div className="absolute -top-12 -right-12 w-64 h-64 pointer-events-none opacity-40">
@@ -81,8 +122,42 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
           </div>
 
           <div className="px-5 flex flex-col items-center relative z-10 -mt-6">
-            <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">{isPublicView ? displayName : 'Your Name'}</h1>
-            <p className="text-[#888888] text-sm mb-4">{`@${username}`}</p>
+            {!isPublicView ? (
+              <input 
+                value={displayName}
+                onChange={e => setDisplayName(e.target.value)}
+                className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center outline-none focus:ring-2 focus:ring-white/20 rounded px-2"
+                placeholder="Your Name"
+              />
+            ) : (
+              <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">{displayName}</h1>
+            )}
+
+            {!isPublicView ? (
+              <div className="flex items-center mb-4">
+                <span className="text-[#888888] text-sm">@</span>
+                <input 
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                  className="text-[#888888] text-sm bg-transparent border-none outline-none focus:ring-2 focus:ring-white/20 rounded px-1 w-24"
+                  placeholder="username"
+                />
+              </div>
+            ) : (
+              <p className="text-[#888888] text-sm mb-4">{`@${username}`}</p>
+            )}
+
+            {!isPublicView && (
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(`https://chipng.com/${username}`);
+                }}
+                className="mb-2 flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800 text-stone-300 hover:text-white hover:bg-slate-700 transition-colors text-xs font-semibold"
+              >
+                <Share className="w-3 h-3" />
+                Share bio link
+              </button>
+            )}
 
             <SocialBar 
                links={socialLinks} 
@@ -111,12 +186,12 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
               <div className={`bg-[#1C1C1E] rounded-3xl p-5 ${!isPublicView ? 'flex items-start gap-4' : ''}`}>
                 {!isPublicView && (
                   <div className="mt-1 cursor-grab text-stone-500 hover:text-white">
-                    <GripVertical className="w-5 h-5" />
+                     <GripVertical className="w-5 h-5" />
                   </div>
                 )}
                 <div className={`flex-1 ${!isPublicView ? 'space-y-3' : ''}`}>
                   {isPublicView ? (
-                     <p className="text-white text-[0.95rem] font-medium text-center py-2">Welcome to {displayName}'s profile</p>
+                     <p className="text-white text-[0.95rem] font-medium text-center py-2">{bio}</p>
                   ) : (
                     <>
                       <div className="flex items-center justify-between mb-2">
@@ -127,7 +202,12 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                           <div className="w-6 h-6 bg-white rounded-full absolute right-0 top-0 shadow-sm"></div>
                         </button>
                       </div>
-                      <p className="text-[#888888] text-sm font-medium">Welcome to {displayName}'s profile</p>
+                      <textarea 
+                        value={bio}
+                        onChange={e => setBio(e.target.value)}
+                        className="text-[#888888] text-sm font-medium bg-transparent border-none outline-none w-full resize-none"
+                        rows={2}
+                      />
                     </>
                   )}
                 </div>
@@ -168,13 +248,42 @@ export default function SmartphoneFrame({ socialLinks = [], onAddSocialClick, on
                 </div>
               </div>
 
-               {/* Phone Block (Public View only) */}
-               {isPublicView && (
-                  <div className="bg-[#1C1C1E] rounded-3xl p-5 border border-white/5 flex items-center gap-4 cursor-pointer hover:bg-[#252528] transition-colors">
-                     <Phone className="w-5 h-5 text-stone-400" />
-                     <span className="text-white font-bold tracking-wide">08100764154</span>
-                  </div>
-               )}
+               {/* Phone Block */}
+              <div className={`bg-[#1C1C1E] rounded-3xl ${isPublicView ? 'p-5 flex items-center justify-between cursor-pointer hover:bg-[#252528] transition-colors gap-4' : 'p-5 flex items-start gap-4'}`} onClick={isPublicView ? downloadVCard : undefined}>
+                {!isPublicView ? (
+                  <>
+                    <div className="mt-1 cursor-grab text-stone-500 hover:text-white">
+                      <GripVertical className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-white tracking-wide">Contact Information</span>
+                        </div>
+                        <button className="w-12 h-7 rounded-full bg-[#8B5CF6] relative transition-colors cursor-pointer border-2 border-transparent">
+                          <div className="w-6 h-6 bg-white rounded-full absolute right-0 top-0 shadow-sm"></div>
+                        </button>
+                      </div>
+                      <input 
+                         value={phone}
+                         onChange={e => setPhone(e.target.value)}
+                         className="text-[#888888] text-sm font-medium bg-transparent border-none outline-none w-full"
+                         placeholder="Phone number"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                     <div className="flex items-center gap-4">
+                       <Phone className="w-5 h-5 text-stone-400" />
+                       <span className="text-white font-bold tracking-wide">{phone}</span>
+                     </div>
+                     <button className="text-sm font-semibold text-[#FF9966] bg-[#FF9966]/10 px-3 py-1.5 rounded-full flex items-center gap-1 hover:bg-[#FF9966]/20 transition-colors shrink-0">
+                       <Download className="w-4 h-4" /> Save Contact
+                     </button>
+                  </>
+                )}
+              </div>
 
               {/* Add Content Container */}
               {!isPublicView && (
