@@ -5,13 +5,11 @@ import { supabase } from '../../supabaseClient';
 
 export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: { onBack: () => void, onComplete: () => void, onSignupSuccess: (email: string, msg: string) => void }) {
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 3;
   
   const [formData, setFormData] = useState({
-    contact: '',
+    email: '',
     password: '',
-    businessName: '',
-    birthday: '',
     username: ''
   });
 
@@ -26,12 +24,10 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
   const isStepValid = () => {
     switch (step) {
       case 1:
-        return formData.contact.length >= 5;
+        return formData.email.length >= 5 && formData.email.includes('@');
       case 2:
         return formData.password.length >= 8;
       case 3:
-        return formData.businessName.length >= 2 && formData.birthday.length > 0;
-      case 4:
         return formData.username.length >= 3;
       default:
         return false;
@@ -46,11 +42,10 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
       } else {
         setLoading(true);
         const { data, error } = await supabase.auth.signUp({
-          email: formData.contact,
+          email: formData.email,
           password: formData.password,
           options: {
             data: {
-              business_name: formData.businessName,
               username: formData.username
             }
           }
@@ -61,7 +56,7 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
           setErrorMsg(error.message);
         } else {
           if (!data.session) {
-            onSignupSuccess(formData.contact, "Check your email and confirm your account before logging in.");
+            onSignupSuccess(formData.email, "Check your email and confirm your account before logging in.");
           } else {
             onComplete();
           }
@@ -99,7 +94,7 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
           <span className="text-slate-500 font-bold text-sm">{step}/{totalSteps}</span>
         </div>
 
-        <h2 className="text-3xl font-black mb-8 tracking-tight">Tell us a bit about your business</h2>
+        <h2 className="text-3xl font-black mb-8 tracking-tight">Create your account</h2>
 
         <div className="flex-1 relative">
           <AnimatePresence mode="wait">
@@ -113,12 +108,12 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
             >
               {step === 1 && (
                 <div>
-                  <label className="block text-slate-400 font-bold text-sm mb-2">Email or Phone</label>
+                  <label className="block text-slate-400 font-bold text-sm mb-2">Email address</label>
                   <input 
-                    type="text" 
-                    value={formData.contact}
-                    onChange={(e) => updateForm('contact', e.target.value)}
-                    placeholder="Enter email or phone"
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => updateForm('email', e.target.value)}
+                    placeholder="Enter your email"
                     autoFocus
                     className="w-full bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-5 py-4 text-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
                   />
@@ -151,32 +146,6 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
               )}
 
               {step === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-slate-400 font-bold text-sm mb-2">Business Name</label>
-                    <input 
-                      type="text" 
-                      value={formData.businessName}
-                      onChange={(e) => updateForm('businessName', e.target.value)}
-                      placeholder="e.g. Acme Studio"
-                      autoFocus
-                      className="w-full bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-5 py-4 text-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 font-bold text-sm mb-2">Your Birthday</label>
-                    <input 
-                      type="date" 
-                      value={formData.birthday}
-                      onChange={(e) => updateForm('birthday', e.target.value)}
-                      className="w-full bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-5 py-4 text-lg focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all [color-scheme:dark]"
-                    />
-                    <p className="mt-3 text-sm text-slate-500 font-medium">Your birthday won't be shown publicly.</p>
-                  </div>
-                </div>
-              )}
-
-              {step === 4 && (
                 <div>
                   <label className="block text-slate-400 font-bold text-sm mb-2">Choose a Username</label>
                   <div className="relative flex items-center">

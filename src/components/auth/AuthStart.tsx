@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Mail, Smartphone } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
 export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue: (method: string) => void, onBack: () => void, onLogin: () => void }) {
@@ -42,10 +42,8 @@ export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue:
             onClick={() => onContinue('email')}
             className="w-full flex items-center justify-center gap-3 bg-slate-800 hover:bg-slate-700 transition-colors py-4 px-6 rounded-full font-bold text-lg"
           >
-            <Smartphone className="w-5 h-5 opacity-70" />
-            <span className="opacity-70">|</span>
             <Mail className="w-5 h-5 opacity-70" />
-            Use phone or email
+            Continue with Email
           </button>
 
           <button 
