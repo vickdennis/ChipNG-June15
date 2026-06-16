@@ -44,6 +44,33 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function AuthRedirectRoute({ children }: { children: React.ReactNode }) {
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuthenticated(!!session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuthenticated(!!session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) return null;
+
+  if (authenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 function LandingPage() {
   const navigate = useNavigate();
   return (
@@ -92,10 +119,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/auth" element={<AuthStartWrapper />} />
-        <Route path="/login" element={<LoginFlowWrapper />} />
-        <Route path="/onboarding" element={<OnboardingFlowWrapper />} />
+        <Route path="/" element={<AuthRedirectRoute><LandingPage /></AuthRedirectRoute>} />
+        <Route path="/auth" element={<AuthRedirectRoute><AuthStartWrapper /></AuthRedirectRoute>} />
+        <Route path="/login" element={<AuthRedirectRoute><LoginFlowWrapper /></AuthRedirectRoute>} />
+        <Route path="/onboarding" element={<AuthRedirectRoute><OnboardingFlowWrapper /></AuthRedirectRoute>} />
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <Dashboard />

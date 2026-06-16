@@ -1,17 +1,21 @@
+import { useState } from 'react';
 import { ArrowLeft, Mail, Smartphone } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 
 export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue: (method: string) => void, onBack: () => void, onLogin: () => void }) {
+  const [errorMsg, setErrorMsg] = useState('');
+
   const handleGoogleLogin = async () => {
+    setErrorMsg('');
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: window.location.origin + '/dashboard'
       }
     });
     
     if (error) {
-      console.error('Error logging in with Google:', error.message);
+      setErrorMsg(error.message);
     }
   };
 
@@ -26,6 +30,12 @@ export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue:
         <p className="text-2xl font-bold text-slate-300 mb-12 leading-tight">
           Join the best link in bio powering the greatest people in the world.
         </p>
+
+        {errorMsg && (
+          <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+            <p className="text-red-400 text-sm font-medium">{errorMsg}</p>
+          </div>
+        )}
 
         <div className="space-y-4 mb-auto">
           <button 
