@@ -115,6 +115,8 @@ function OnboardingFlowWrapper() {
     />;
 }
 
+import PublicProfile from './pages/PublicProfile';
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -128,6 +130,7 @@ export default function App() {
             <Dashboard />
           </ProtectedRoute>
         } />
+        <Route path="/:username" element={<PublicProfile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

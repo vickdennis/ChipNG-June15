@@ -149,7 +149,7 @@ export default function OnboardingFlow({ onBack, onComplete, onSignupSuccess }: 
                 <div>
                   <label className="block text-slate-400 font-bold text-sm mb-2">Choose a Username</label>
                   <div className="relative flex items-center">
-                    <span className="absolute left-5 text-slate-500 font-bold text-lg">chip.ng/</span>
+                    <span className="absolute left-5 text-slate-500 font-bold text-lg">chipng.com/</span>
                     <input 
                       type="text" 
                       value={formData.username}

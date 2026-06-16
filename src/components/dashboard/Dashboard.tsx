@@ -4,10 +4,38 @@ import StyleSwitcher from './StyleSwitcher';
 import LinksList from './LinksList';
 import AddLinkDrawer from './AddLinkDrawer';
 import SmartphoneFrame from './SmartphoneFrame';
+import ContactInfoModal from './ContactInfoModal';
+import EditBioModal from './EditBioModal';
+import ManageSocialModal from './ManageSocialModal';
 
 export default function Dashboard() {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
+  const [isContactModalOpen, setContactModalOpen] = useState(false);
+  const [isBioModalOpen, setBioModalOpen] = useState(false);
+
+  // Social Links State
+  const [socialLinks, setSocialLinks] = useState<any[]>([]);
+  const [managePlatform, setManagePlatform] = useState<string | null>(null);
+
+  const handleAddSocialLink = (platform: any, handle: string) => {
+    setSocialLinks(prev => [
+      ...prev,
+      {
+        id: Math.random().toString(36).substr(2, 9),
+        platform: platform.name,
+        url: platform.baseUrl + handle,
+        handle: handle,
+        icon: platform.icon,
+        bgClass: platform.bgClass,
+        baseUrl: platform.baseUrl
+      }
+    ]);
+  };
+
+  const activeManageLinks = managePlatform 
+    ? socialLinks.filter(l => l.platform === managePlatform)
+    : [];
 
   return (
     <div className="flex bg-white min-h-screen font-sans selection:bg-indigo-100 selection:text-indigo-900">
@@ -42,7 +70,10 @@ export default function Dashboard() {
 
             <StyleSwitcher />
             
-            <LinksList />
+            <LinksList 
+              onEditBio={() => setBioModalOpen(true)}
+              onEditContact={() => setContactModalOpen(true)}
+            />
           </div>
         </div>
       </div>
@@ -55,11 +86,35 @@ export default function Dashboard() {
                <span className="font-bold">Live Preview</span>
              </div>
          )}
-         <SmartphoneFrame />
+         <SmartphoneFrame 
+           socialLinks={socialLinks} 
+           onAddSocialClick={() => setDrawerOpen(true)} 
+           onSocialLinkClick={(link) => setManagePlatform(link.platform)}
+         />
       </div>
 
       {/* Right Drawer - Add Link */}
-      <AddLinkDrawer isOpen={isDrawerOpen} onClose={() => setDrawerOpen(false)} />
+      <AddLinkDrawer isOpen={isDrawerOpen} onClose={() => setDrawerOpen(false)} onSave={handleAddSocialLink} />
+      
+      {/* Modals */}
+      <ContactInfoModal isOpen={isContactModalOpen} onClose={() => setContactModalOpen(false)} />
+      <EditBioModal isOpen={isBioModalOpen} onClose={() => setBioModalOpen(false)} />
+      <ManageSocialModal 
+        isOpen={!!managePlatform} 
+        onClose={() => setManagePlatform(null)} 
+        platform={managePlatform || ''}
+        links={activeManageLinks}
+        onRemove={(id) => setSocialLinks(prev => prev.filter(l => l.id !== id))}
+        onEdit={(link) => {
+           // Basic edit flow, typically would open another modal with pre-filled inputs
+           setManagePlatform(null);
+           setDrawerOpen(true);
+        }}
+        onAddAnother={() => {
+           setManagePlatform(null);
+           setDrawerOpen(true);
+        }}
+      />
     </div>
   );
 }
