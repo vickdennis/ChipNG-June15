@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [isContactModalOpen, setContactModalOpen] = useState(false);
   const [isBioModalOpen, setBioModalOpen] = useState(false);
 
+  const [isEditMode, setIsEditMode] = useState(false);
+
   // Social Links State
   const [socialLinks, setSocialLinks] = useState<any[]>([]);
   const [managePlatform, setManagePlatform] = useState<string | null>(null);
@@ -40,6 +42,9 @@ export default function Dashboard() {
   return (
     <div className="font-sans selection:bg-indigo-500/30 selection:text-white bg-black">
          <SmartphoneFrame 
+           isPublicView={!isEditMode}
+           onEditClick={() => setIsEditMode(true)}
+           onSaveClick={() => setIsEditMode(false)}
            socialLinks={socialLinks} 
            onAddSocialClick={() => setDrawerOpen(true)} 
            onSocialLinkClick={(link) => setManagePlatform(link.platform)}
