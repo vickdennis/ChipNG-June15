@@ -74,12 +74,11 @@ function AuthRedirectRoute({ children }: { children: React.ReactNode }) {
 function LandingPage() {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-[#FF5E62]/30 selection:text-white">
       <Navbar onAuth={() => navigate('/auth')} />
       <main>
         <Hero />
         <Features />
-        <Testimonials />
         <Pricing />
       </main>
       <Footer />
@@ -116,6 +115,7 @@ function OnboardingFlowWrapper() {
 }
 
 import PublicProfile from './pages/PublicProfile';
+import AdminPanel from './pages/AdminPanel';
 
 export default function App() {
   return (
@@ -130,6 +130,7 @@ export default function App() {
             <Dashboard />
           </ProtectedRoute>
         } />
+        <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
         <Route path="/:username" element={<PublicProfile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

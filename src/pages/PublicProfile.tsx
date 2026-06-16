@@ -35,7 +35,8 @@ export default function PublicProfile() {
             phone: data.phone,
             email: data.email,
             address: data.address,
-            bgImage: data.cover_image
+            bgImage: data.cover_image,
+            isPro: data.is_pro
           });
 
           // Fetch links associated with profile
@@ -101,6 +102,7 @@ export default function PublicProfile() {
          email={profile.email}
          address={profile.address}
          bgImage={profile.bgImage}
+         isPro={profile.isPro}
          socialLinks={socialLinks} 
        />
     </div>

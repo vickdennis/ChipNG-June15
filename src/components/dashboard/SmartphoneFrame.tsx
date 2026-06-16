@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical, Download } from 'lucide-react';
+import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical, Download, BadgeCheck } from 'lucide-react';
 import SocialBar from './SocialBar';
 
 interface SmartphoneFrameProps {
@@ -15,6 +15,7 @@ interface SmartphoneFrameProps {
   email?: string;
   address?: string;
   bgImage?: string | null;
+  isPro?: boolean;
 
   onEditClick?: () => void;
   onSaveClick?: () => void;
@@ -32,6 +33,7 @@ export default function SmartphoneFrame({
   email = "",
   address = "",
   bgImage = null,
+  isPro = false,
   onEditClick, 
   onSaveClick 
 }: SmartphoneFrameProps) {
@@ -127,13 +129,17 @@ export default function SmartphoneFrame({
           <div className="px-5 flex flex-col items-center relative z-10 -mt-6">
             {!isPublicView ? (
               <div 
-                className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center px-2 cursor-text"
+                className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center px-2 cursor-text flex items-center justify-center gap-1.5"
                 onClick={onEditClick}
               >
                 {displayName}
+                {isPro && <BadgeCheck className="w-6 h-6 text-[#3b82f6]" />}
               </div>
             ) : (
-              <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5">{displayName}</h1>
+              <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5 flex items-center justify-center gap-1.5">
+                {displayName}
+                {isPro && <BadgeCheck className="w-6 h-6 text-[#3b82f6]" />}
+              </h1>
             )}
 
             {!isPublicView ? (

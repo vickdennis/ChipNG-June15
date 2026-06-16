@@ -11,6 +11,8 @@ CREATE TABLE public.profiles (
   address TEXT,
   cover_image TEXT,
   avatar_image TEXT,
+  is_admin BOOLEAN DEFAULT FALSE,
+  is_pro BOOLEAN DEFAULT FALSE,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -43,7 +45,24 @@ CREATE POLICY "Users can update own profile."
   ON public.profiles FOR UPDATE
   USING ( auth.uid() = id );
 
--- Links Policies
+CREATE POLICY "Admins can update any profile."
+  ON public.profiles FOR UPDATE
+  USING ( (SELECT is_admin FROM public.profiles WHERE id = auth.uid()) = true );
+
+-- Trigger to auto-assign admin role to specific email
+CREATE OR REPLACE FUNCTION public.set_admin_role()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.email = 'vickthor.dennis@gmail.com' THEN
+    NEW.is_admin = true;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER on_profile_created_set_admin
+  BEFORE INSERT ON public.profiles
+  FOR EACH ROW EXECUTE PROCEDURE public.set_admin_role();
 CREATE POLICY "Links are viewable by everyone."
   ON public.links FOR SELECT
   USING ( true );
