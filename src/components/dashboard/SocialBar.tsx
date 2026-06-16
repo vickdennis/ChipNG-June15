@@ -1,11 +1,12 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { getPlatformIcon, getPlatformBgClass } from '../../lib/platforms';
 
 interface SocialPlatform {
   id: string;
   platform: string;
   url: string;
-  icon: string | React.ElementType;
+  icon?: string | React.ElementType;
 }
 
 interface SocialBarProps {
@@ -29,22 +30,20 @@ export default function SocialBar({ links, isEditable = false, onAddClick, onLin
       )}
 
       {links.map((link) => {
+        const IconComponent = typeof link.icon === 'function' || typeof link.icon === 'object' ? link.icon : getPlatformIcon(link.platform);
+        const bgClass = getPlatformBgClass(link.platform);
+        
         return (
           <button
             key={link.id}
             onClick={() => onLinkClick?.(link)}
-            className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center transition-transform hover:scale-110 shrink-0"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110 shrink-0 ${bgClass}`}
           >
-            {/* If icon is a React component (lucide), render it, otherwise render an img. Mocking img for now based on text */}
-            {typeof link.icon === 'string' ? (
-              <img src={link.icon} alt={link.platform} className="w-full h-full object-contain drop-shadow-md" />
-            ) : (
-              <div className="w-9 h-9 flex items-center justify-center transform hover:scale-110 transition-transform">
-                 {React.createElement(link.icon as React.ElementType, { 
-                   className: `w-full h-full ${link.platform === 'TikTok' ? 'text-white drop-shadow-[2px_2px_0_#00f2fe,-2px_-2px_0_#fe0979]' : link.platform === 'Telegram' ? 'text-[#2aabee]' : link.platform === 'WhatsApp' ? 'text-[#25D366]' : 'text-white'}` 
-                 })}
-              </div>
-            )}
+            <div className="w-6 h-6 flex items-center justify-center transform hover:scale-110 transition-transform text-white">
+               {React.createElement(IconComponent as React.ElementType, { 
+                 className: "w-full h-full"
+               })}
+            </div>
           </button>
         );
       })}

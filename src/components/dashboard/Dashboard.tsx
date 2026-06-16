@@ -4,6 +4,7 @@ import SmartphoneFrame from './SmartphoneFrame';
 import AddLinkDrawer from './AddLinkDrawer';
 import ManageSocialModal from './ManageSocialModal';
 import { supabase } from '../../supabaseClient';
+import { getPlatformIcon, getPlatformBgClass } from '../../lib/platforms';
 
 export default function Dashboard() {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -250,8 +251,8 @@ export default function Dashboard() {
                     <div className="cursor-grab text-stone-600 hover:text-stone-300 transition-colors">
                        <GripVertical className="w-5 h-5" />
                     </div>
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white ${link.bgClass || 'bg-stone-800'}`}>
-                       {React.createElement(link.icon, { className: "w-6 h-6" })}
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white ${link.bgClass || getPlatformBgClass(link.platform) || 'bg-stone-800'}`}>
+                       {React.createElement(link.icon || getPlatformIcon(link.platform), { className: "w-6 h-6" })}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-white">{link.platform}</p>

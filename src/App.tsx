@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -17,11 +17,38 @@ import LoginFlow from './components/auth/LoginFlow';
 import Dashboard from './components/dashboard/Dashboard';
 import { supabase } from './supabaseClient';
 
+import { useInactivityTimeout } from './hooks/useInactivityTimeout';
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const isExpired = useRef(false);
+
+  // Synchronously check before rendering
+  if (typeof window !== 'undefined') {
+    const lastActivityStr = localStorage.getItem('lastActivityTime');
+    if (lastActivityStr) {
+      if (Date.now() - parseInt(lastActivityStr, 10) > 15 * 60 * 1000) {
+        isExpired.current = true;
+      }
+    }
+  }
+
+  useInactivityTimeout(15); // Handles timers and future idle states
 
   useEffect(() => {
+    if (isExpired.current) {
+      // Force out immediately
+      const killSession = async () => {
+        await supabase.auth.signOut();
+        localStorage.removeItem('lastActivityTime');
+        setAuthenticated(false);
+        setLoading(false);
+      };
+      killSession();
+      return;
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setAuthenticated(!!session);
       setLoading(false);
@@ -37,7 +64,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (loading) return null;
 
-  if (!authenticated) {
+  // Protect against flash if it was expired initially
+  if (!authenticated || isExpired.current) {
     return <Navigate to="/login" replace />;
   }
 
@@ -116,10 +144,13 @@ function OnboardingFlowWrapper() {
 
 import PublicProfile from './pages/PublicProfile';
 import AdminPanel from './pages/AdminPanel';
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <>
+      <Toaster position="top-center" />
+      <BrowserRouter>
       <Routes>
         <Route path="/" element={<AuthRedirectRoute><LandingPage /></AuthRedirectRoute>} />
         <Route path="/auth" element={<AuthRedirectRoute><AuthStartWrapper /></AuthRedirectRoute>} />
@@ -135,5 +166,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
