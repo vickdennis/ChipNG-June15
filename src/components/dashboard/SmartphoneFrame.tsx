@@ -3,7 +3,7 @@ import { Share, ExternalLink } from 'lucide-react';
 
 export default function SmartphoneFrame() {
   const username = "creator";
-  const userUrl = `chipng.com/${username}`;
+  const userUrl = `chip.ng/${username}`;
 
   return (
     <div className="flex flex-col items-center justify-center p-8 bg-slate-50 min-h-screen border-l border-slate-200">

@@ -1,6 +1,20 @@
 import { ArrowLeft, Mail, Smartphone } from 'lucide-react';
+import { supabase } from '../../supabaseClient';
 
 export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue: (method: string) => void, onBack: () => void, onLogin: () => void }) {
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    
+    if (error) {
+      console.error('Error logging in with Google:', error.message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0e1117] text-white flex flex-col pt-12 px-6 pb-8">
       <div className="max-w-md w-full mx-auto flex-1 flex flex-col relative">
@@ -25,7 +39,7 @@ export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue:
           </button>
 
           <button 
-            onClick={() => onContinue('google')}
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 bg-white text-slate-900 hover:bg-slate-100 transition-colors py-4 px-6 rounded-full font-bold text-lg"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
