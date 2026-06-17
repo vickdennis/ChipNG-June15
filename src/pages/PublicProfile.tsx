@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import SmartphoneFrame from '../components/dashboard/SmartphoneFrame';
 import { supabase } from '../supabaseClient';
 import { ShieldAlert } from 'lucide-react';
+import { 
+  PremiumProfileLayout, 
+  FeaturedMediaBlock, 
+  SwipeableCarousel, 
+  DirectActionLink, 
+  LeadCaptureBlock, 
+  MerchStoreBlock 
+} from '../components/public/PremiumProfile';
 
 export default function PublicProfile() {
   const { username } = useParams();
@@ -37,7 +44,7 @@ export default function PublicProfile() {
             address: data.address,
             bgImage: data.cover_image,
             avatarImage: data.avatar_image,
-            isPro: data.is_pro
+            isPro: data.is_pro || true // Default to true to show premium features
           });
 
           // Fetch links associated with profile
@@ -92,21 +99,45 @@ export default function PublicProfile() {
     );
   }
 
+  // Stub data for premium blocks
+  const stubCarouselItems = [
+    { title: "My Preset Pack", price: "$15.00", imageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=300", url: "#" },
+    { title: "1-on-1 Coaching", price: "$150.00", imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=300", url: "#" },
+    { title: "Exclusive Vlog", price: "Free", imageUrl: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=300", url: "#" }
+  ];
+
+  const stubMerch = [
+    { name: "Speedy Hoodie", price: "$45.00", imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=300", url: "#" },
+    { name: "Signature Cap", price: "$25.00", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=300", url: "#" }
+  ];
+
   return (
-    <div className="min-h-screen bg-black flex justify-center">
-       <SmartphoneFrame 
-         isPublicView={true} 
-         username={profile.username} 
-         displayName={profile.displayName || profile.username}
-         bio={profile.bio}
-         phone={profile.phone}
-         email={profile.email}
-         address={profile.address}
-         bgImage={profile.bgImage}
-         avatarImage={profile.avatarImage}
-         isPro={profile.isPro}
-         socialLinks={socialLinks} 
-       />
-    </div>
+    <PremiumProfileLayout profile={profile} socialLinks={socialLinks}>
+      <FeaturedMediaBlock 
+        title="LATEST LIVESTREAM: INSANE MOMENTS!"
+        thumbnailUrl="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
+        videoUrl="https://youtube.com"
+      />
+      
+      <SwipeableCarousel items={stubCarouselItems} />
+
+      {socialLinks.length > 0 && socialLinks.map((link) => (
+        <DirectActionLink 
+          key={link.id}
+          platform={link.platform}
+          label={`Follow on ${link.platform}`}
+          url={link.url}
+        />
+      ))}
+
+      {socialLinks.length === 0 && (
+         <DirectActionLink platform="youtube" label="Subscribe on YouTube" url="#" />
+      )}
+
+      <LeadCaptureBlock ctaText={`Join the ${profile.displayName || profile.username} Fan Club`} />
+
+      <MerchStoreBlock products={stubMerch} />
+      
+    </PremiumProfileLayout>
   );
 }
