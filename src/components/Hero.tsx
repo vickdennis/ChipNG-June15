@@ -1,7 +1,9 @@
 import { motion } from 'motion/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-black text-white">
       {/* Background gradients */}
@@ -27,10 +29,16 @@ export default function Hero() {
             Build a fast, premium bio link tailored for modern creators and businesses. Consolidate your links, unlock pro analytics, and verify your brand.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-8 py-4 bg-gradient-to-r from-[#FF5E62] to-[#FF9966] text-white rounded-full font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg shadow-[#FF5E62]/20">
+            <button 
+               onClick={() => navigate('/auth')}
+               className="px-8 py-4 bg-gradient-to-r from-[#FF5E62] to-[#FF9966] text-white rounded-full font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-lg shadow-[#FF5E62]/20"
+            >
               Claim Your Free Link <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="px-8 py-4 bg-stone-900 text-white ring-1 ring-white/10 rounded-full font-bold hover:bg-stone-800 transition-colors shadow-sm">
+            <button 
+               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+               className="px-8 py-4 bg-stone-900 text-white ring-1 ring-white/10 rounded-full font-bold hover:bg-stone-800 transition-colors shadow-sm"
+            >
               View Examples
             </button>
           </div>

@@ -54,8 +54,8 @@ export default function SmartphoneFrame({
   const userUrl = `chipng.com/${username}`;
 
   return (
-    <div className={`flex flex-col items-center justify-center min-h-screen bg-black ${!isPublicView ? '' : ''}`}>
-      <div className={`w-full max-w-md h-full min-h-screen bg-black relative flex flex-col font-sans text-white`}>
+    <div className={`flex flex-col items-center justify-center min-h-screen ${isPublicView ? 'bg-[#050505] p-0 sm:py-12 bg-grid-white/[0.02]' : 'bg-black'}`}>
+      <div className={`w-full max-w-md h-full relative flex flex-col font-sans text-white ${isPublicView ? 'min-h-screen sm:min-h-[850px] bg-[#0a0a0a] sm:rounded-[40px] sm:shadow-2xl sm:ring-1 sm:ring-white/10 overflow-hidden shadow-black/50' : 'min-h-screen bg-black'}`}>
           
           {/* Navigation Header for View Mode */}
           {isPublicView && (
@@ -88,12 +88,13 @@ export default function SmartphoneFrame({
 
           {/* Header Banner */}
           <div 
-            className={`${isPublicView ? 'mt-4 ' : ''}relative w-full h-64 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden`}
+            className={`${isPublicView ? '' : 'mt-4 '}relative w-full h-72 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden`}
             style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
           >
              {!bgImage && (
-               <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70">
-                  <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-black uppercase">
+               <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20">
+                  <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+                  <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-white/50 uppercase drop-shadow-2xl mix-blend-overlay">
                     {username}
                   </div>
                   <div className="absolute top-4 right-8 w-24 h-24 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
@@ -187,7 +188,7 @@ export default function SmartphoneFrame({
                 </div>
               )}
               
-              <div className={`bg-[#1C1C1E] rounded-3xl p-5 ${!isPublicView ? 'flex items-start gap-4' : ''}`}>
+              <div className={`${isPublicView ? 'bg-white/5 backdrop-blur-md border border-white/10' : 'bg-[#1C1C1E]'} rounded-[24px] p-5 ${!isPublicView ? 'flex items-start gap-4' : ''}`}>
                 {!isPublicView && (
                   <div className="mt-1 cursor-grab text-stone-500 hover:text-white">
                      <GripVertical className="w-5 h-5" />
@@ -195,7 +196,7 @@ export default function SmartphoneFrame({
                 )}
                 <div className={`flex-1 ${!isPublicView ? 'space-y-3' : ''}`}>
                   {isPublicView ? (
-                     <p className="text-white text-[0.95rem] font-medium text-center py-2">{bio}</p>
+                     <p className="text-stone-300 text-[1rem] leading-relaxed text-center py-2">{bio}</p>
                   ) : (
                     <>
                       <div className="flex items-center justify-between mb-2">
@@ -215,7 +216,7 @@ export default function SmartphoneFrame({
               </div>
 
               {/* Email Block */}
-              <div className={`${isPublicView ? 'bg-white rounded-full p-2 flex gap-2 w-full max-w-full overflow-hidden' : 'bg-[#1C1C1E] rounded-3xl p-5 flex items-start gap-4'}`}>
+              <div className={`${isPublicView ? 'bg-white/5 backdrop-blur-md rounded-[24px] p-2 flex gap-2 w-full max-w-full border border-white/10 overflow-hidden' : 'bg-[#1C1C1E] rounded-3xl p-5 flex items-start gap-4'}`}>
                 {!isPublicView && (
                   <div className="mt-1 cursor-grab text-stone-500 hover:text-white">
                     <GripVertical className="w-5 h-5" />
@@ -227,10 +228,10 @@ export default function SmartphoneFrame({
                       <input 
                         type="email" 
                         placeholder="your@email.com" 
-                        className="bg-transparent text-[#3b82f6] px-5 py-3 flex-1 w-full min-w-0 focus:outline-none placeholder-[#3b82f6] font-medium"
+                        className="bg-transparent text-white px-5 py-3 flex-1 w-full min-w-0 focus:outline-none placeholder-stone-500 font-medium"
                       />
-                      <button className="bg-[#4a4a4a] text-white font-bold text-[0.95rem] px-6 py-3 rounded-full flex items-center gap-2 hover:bg-[#333] transition-colors shrink-0">
-                        Connect with <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center shrink-0" />
+                      <button className="bg-white text-black font-bold text-[0.95rem] px-6 py-3 rounded-[20px] flex items-center gap-2 hover:bg-stone-200 transition-colors shrink-0">
+                        Subscribe
                       </button>
                     </div>
                   ) : (
@@ -250,7 +251,7 @@ export default function SmartphoneFrame({
               </div>
 
                {/* Phone Block */}
-              <div className={`bg-[#1C1C1E] rounded-3xl ${isPublicView ? 'p-5 flex items-center justify-between cursor-pointer hover:bg-[#252528] transition-colors gap-4' : 'p-5 flex items-start gap-4'}`} onClick={isPublicView ? downloadVCard : undefined}>
+              <div className={`${isPublicView ? 'bg-white/5 backdrop-blur-md border border-white/10 rounded-[28px]' : 'bg-[#1C1C1E] rounded-3xl'} ${isPublicView ? 'p-5 flex items-center justify-between cursor-pointer hover:bg-white/10 transition-colors gap-4' : 'p-5 flex items-start gap-4'}`} onClick={isPublicView ? downloadVCard : undefined}>
                 {!isPublicView ? (
                   <>
                     <div className="mt-1 cursor-grab text-stone-500 hover:text-white">
@@ -305,18 +306,23 @@ export default function SmartphoneFrame({
             {/* Bottom Nav / Tabs mocked */}
             {isPublicView && (
               <>
-                <div className="flex items-center justify-center gap-8 mt-8 border-b border-stone-800 pb-4 w-full">
-                  <button className="text-white font-bold text-sm">Shouts</button>
-                  <button className="text-stone-500 font-bold text-sm">Media</button>
+                 <div className="flex items-center justify-center gap-8 mt-12 border-b border-white/10 pb-4 w-full">
+                  <button className="text-white font-bold text-sm tracking-wide">SHOUTS</button>
+                  <button className="text-stone-500 font-bold text-sm tracking-wide hover:text-stone-300 transition-colors">MEDIA</button>
                 </div>
-                <div className="w-full mt-6 bg-[#1a1a1c] border border-stone-800 rounded-3xl p-5 min-h-[150px] relative">
+                <div className="w-full mt-6 bg-white/5 border border-white/10 rounded-[28px] p-6 min-h-[150px] relative backdrop-blur-md mb-8">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[0.6rem] text-black font-bold border-2 border-stone-800 shrink-0 uppercase">{username.substring(0,3)}</div>
-                    <span className="text-stone-400 text-sm">What's happening?</span>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[0.6rem] text-white font-black shrink-0 uppercase shadow-lg border border-white/20">{username.substring(0,3)}</div>
+                    <span className="text-stone-400 text-sm font-medium">What's happening?</span>
                   </div>
-                  <button className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-gradient-to-tr from-orange-500 to-pink-500 flex items-center justify-center shadow-lg">
-                    <Plus className="w-5 h-5 text-white" />
+                  <button className="absolute bottom-5 right-5 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xl hover:scale-105 transition-transform">
+                    <Plus className="w-6 h-6 text-black" />
                   </button>
+                </div>
+                
+                {/* Clean watermark */}
+                <div className="pb-8 pt-4 flex justify-center">
+                  <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">POWERED BY CHIP NG</span>
                 </div>
               </>
             )}
