@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import BrandLogo from '../BrandLogo';
 
 export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue: (method: string) => void, onBack: () => void, onLogin: () => void }) {
   const [errorMsg, setErrorMsg] = useState('');
@@ -22,11 +23,13 @@ export default function AuthStart({ onContinue, onBack, onLogin }: { onContinue:
   return (
     <div className="min-h-screen bg-[#0e1117] text-white flex flex-col pt-12 px-6 pb-8">
       <div className="max-w-md w-full mx-auto flex-1 flex flex-col relative">
-        <button onClick={onBack} className="p-2 -ml-2 mb-8 hover:bg-slate-800 rounded-full self-start transition-colors">
-          <ArrowLeft className="w-6 h-6 text-slate-300" />
+        <button onClick={onBack} className="p-2 -ml-2 mb-8 bg-white/5 hover:bg-white/10 rounded-full self-start transition-colors">
+          <ArrowLeft className="w-5 h-5 text-slate-300" />
         </button>
 
-        <h1 className="text-3xl font-black mb-4 tracking-tight">CHIP NG</h1>
+        <div className="mb-6 -ml-2">
+          <BrandLogo className="w-40 h-auto" />
+        </div>
         <p className="text-2xl font-bold text-slate-300 mb-12 leading-tight">
           Join the best link in bio powering the greatest people in the world.
         </p>

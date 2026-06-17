@@ -155,12 +155,12 @@ export default function Dashboard() {
     ? socialLinks.filter(l => l.platform === managePlatform)
     : [];
 
-  const paystackConfig = {
+  const paystackConfig = React.useMemo(() => ({
       reference: (new Date()).getTime().toString(),
       email: email || "user@chipng.com",
       amount: 3000 * 100,
       publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_dummy',
-  };
+  }), [email]);
 
   const initializePayment = usePaystackPayment(paystackConfig);
 
