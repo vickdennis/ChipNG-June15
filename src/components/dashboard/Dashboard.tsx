@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, Link2, MonitorSmartphone, GripVertical, Download, Image as ImageIcon, BadgeCheck, Activity, Users, MousePointerClick, Globe, Shield } from 'lucide-react';
+import { usePaystackPayment } from 'react-paystack';
 import SmartphoneFrame from './SmartphoneFrame';
 import AddLinkDrawer from './AddLinkDrawer';
 import ManageSocialModal from './ManageSocialModal';
@@ -153,6 +154,27 @@ export default function Dashboard() {
   const activeManageLinks = managePlatform 
     ? socialLinks.filter(l => l.platform === managePlatform)
     : [];
+
+  const paystackConfig = {
+      reference: (new Date()).getTime().toString(),
+      email: email || "user@chipng.com",
+      amount: 3000 * 100,
+      publicKey: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_dummy',
+  };
+
+  const initializePayment = usePaystackPayment(paystackConfig);
+
+  const handleUpgradeSuccess = async (reference: any) => {
+    setIsPro(true);
+    if (userId) {
+      await supabase.from('profiles').update({ is_pro: true }).eq('id', userId);
+      alert('Congratulations! You are now a Pro user.');
+    }
+  };
+
+  const handleUpgradeClose = () => {
+    console.log('Payment window closed.');
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col md:flex-row font-sans">
@@ -361,7 +383,17 @@ export default function Dashboard() {
                    <span className="text-stone-500 text-sm">Display a blue checkmark on your public profile.</span>
                 </div>
                 <button 
-                  onClick={() => setIsPro(!isPro)} 
+                  onClick={() => {
+                     if (!isPro) {
+                        initializePayment({ 
+                          onSuccess: handleUpgradeSuccess, 
+                          onClose: handleUpgradeClose 
+                        });
+                     } else {
+                        // Optimistically toggle off or do nothing? Keep it simple:
+                        setIsPro(false);
+                     }
+                  }} 
                   className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${isPro ? 'bg-blue-500' : 'bg-stone-700'}`}
                 >
                   <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${isPro ? 'translate-x-6' : 'translate-x-1'}`} />
@@ -397,7 +429,15 @@ export default function Dashboard() {
                   <div className="absolute -top-12 -right-12 w-64 h-64 bg-gradient-to-br from-[#FF5E62]/10 to-transparent blur-3xl rounded-full"></div>
                   <h3 className="text-lg font-bold">Unlock Advanced Analytics</h3>
                   <p className="text-stone-400 text-sm max-w-sm mx-auto">Get deep insights into your audience, export data, and remove branding with the Pro Plan.</p>
-                  <button onClick={() => setIsPro(true)} className="bg-white text-black font-bold px-6 py-2.5 rounded-full hover:bg-stone-200 transition-colors">
+                  <button 
+                     onClick={() => {
+                       initializePayment({ 
+                         onSuccess: handleUpgradeSuccess, 
+                         onClose: handleUpgradeClose 
+                       }) 
+                     }} 
+                     className="bg-white text-black font-bold px-6 py-2.5 rounded-full hover:bg-stone-200 transition-colors"
+                  >
                     Upgrade for ₦3,000/mo
                   </button>
                 </div>

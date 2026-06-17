@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical, Download, BadgeCheck } from 'lucide-react';
 import SocialBar from './SocialBar';
 import { getPlatformIcon } from '../../lib/platforms';
+import BrandLogo from '../BrandLogo';
 
 interface SmartphoneFrameProps {
   socialLinks?: any[];
@@ -353,15 +354,18 @@ export default function SmartphoneFrame({
                 </div>
                 
                 {/* Clean watermark */}
-                <div className="pb-8 pt-4 flex justify-center">
-                  <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">POWERED BY CHIP NG</span>
-                </div>
+                {!isPro && (
+                  <div className="pb-8 pt-4 flex flex-col items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
+                    <span className="text-[9px] font-black text-white mb-2 uppercase tracking-[0.2em]">POWERED BY</span>
+                    <BrandLogo className="w-20 h-auto bg-white rounded flex items-center justify-center p-1" />
+                  </div>
+                )}
               </>
             )}
 
             {!isPublicView && (
-               <div className="mt-8 mb-4">
-                  <span className="text-[10px] font-bold text-[#444444] uppercase tracking-[0.2em]">chip ng</span>
+               <div className="mt-8 mb-4 opacity-50 flex items-center justify-center">
+                  <BrandLogo className="w-20 h-auto bg-white rounded p-1" />
                </div>
             )}
           </div>

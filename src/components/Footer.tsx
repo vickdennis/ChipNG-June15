@@ -1,4 +1,5 @@
 import { SiTiktok, SiWhatsapp } from 'react-icons/si';
+import BrandLogo from './BrandLogo';
 
 export default function Footer() {
   return (
@@ -6,7 +7,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col items-center md:items-start gap-3">
-            <span className="text-2xl font-black tracking-tight text-slate-900">CHIP NG</span>
+            <BrandLogo className="w-24 h-auto" />
             <p className="text-sm font-medium">&copy; {new Date().getFullYear()} CHIP NG. All rights reserved.</p>
           </div>
           
