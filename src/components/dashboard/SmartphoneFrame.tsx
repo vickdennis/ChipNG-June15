@@ -119,27 +119,15 @@ export default function SmartphoneFrame({
              )}
           </div>
 
-          <div className="px-5 flex flex-col items-center relative z-10 -mt-16">
-             {/* Avatar Profile Picture */}
-            <div className="relative mb-3 group cursor-pointer" onClick={onEditClick}>
-              <div className="w-[120px] h-[120px] rounded-full border-[5px] border-[#0a0a0a] bg-stone-800 shadow-xl overflow-hidden flex items-center justify-center relative z-10">
-                 {avatarImage ? (
-                    <img src={avatarImage} alt="Profile" className="w-full h-full object-cover" />
-                 ) : (
-                    <span className="text-4xl font-bold text-white uppercase">{username.substring(0,2)}</span>
-                 )}
-                 {!isPublicView && (
-                   <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-colors">
-                      <Edit2 className="w-6 h-6 text-white" />
-                   </div>
-                 )}
-              </div>
-              {isPro && (
-                <div className="absolute bottom-2 right-2 bg-black rounded-full p-[2px] shadow-sm z-20">
-                  <BadgeCheck className="w-7 h-7 text-[#1d9bf0] fill-white" />
-                </div>
-              )}
-            </div>
+          <div className="px-5 flex flex-col items-center relative z-10 -mt-8">
+             {/* Avatar Removed */}
+             <div className="relative mb-3 flex items-center justify-center">
+                {isPro && (
+                  <div className="bg-black rounded-full p-[2px] shadow-sm z-20">
+                    <BadgeCheck className="w-8 h-8 text-[#1d9bf0] fill-white" />
+                  </div>
+                )}
+             </div>
 
             {!isPublicView ? (
               <div 
@@ -184,11 +172,6 @@ export default function SmartphoneFrame({
                onLinkClick={(link) => isPublicView ? window.open(link.url, '_blank') : onSocialLinkClick?.(link)}
             />
 
-            {!isPublicView && (
-              <div className="flex items-center gap-1 mt-4 mb-8 text-xs text-[#888888] tracking-wider">
-                <span className="font-bold text-white">10.4K</span> Total Followers <span className="ml-1 opacity-50">▾</span>
-              </div>
-            )}
             {isPublicView && <div className="h-4"></div>}
 
             {/* Profile Content Base */}
@@ -336,26 +319,11 @@ export default function SmartphoneFrame({
               )}
             </div>
 
-            {/* Bottom Nav / Tabs mocked */}
+            {/* Watermark */}
             {isPublicView && (
               <>
-                 <div className="flex items-center justify-center gap-8 mt-12 border-b border-white/10 pb-4 w-full">
-                  <button className="text-white font-bold text-sm tracking-wide">SHOUTS</button>
-                  <button className="text-stone-500 font-bold text-sm tracking-wide hover:text-stone-300 transition-colors">MEDIA</button>
-                </div>
-                <div className="w-full mt-6 bg-white/5 border border-white/10 rounded-[28px] p-6 min-h-[150px] relative backdrop-blur-md mb-8">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-[0.6rem] text-white font-black shrink-0 uppercase shadow-lg border border-white/20">{username.substring(0,3)}</div>
-                    <span className="text-stone-400 text-sm font-medium">What's happening?</span>
-                  </div>
-                  <button className="absolute bottom-5 right-5 w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xl hover:scale-105 transition-transform">
-                    <Plus className="w-6 h-6 text-black" />
-                  </button>
-                </div>
-                
-                {/* Clean watermark */}
                 {!isPro && (
-                  <div className="pb-8 pt-4 flex flex-col items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
+                  <div className="pb-8 mt-12 pt-4 flex flex-col items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
                     <span className="text-[9px] font-black text-white mb-2 uppercase tracking-[0.2em]">POWERED BY</span>
                     <BrandLogo className="w-20 h-auto" />
                   </div>

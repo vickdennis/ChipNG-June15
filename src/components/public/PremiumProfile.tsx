@@ -18,24 +18,15 @@ export function PremiumProfileLayout({ profile, socialLinks, children }: any) {
       <div className="w-full max-w-md min-h-screen sm:min-h-[850px] relative z-10 rounded-none sm:rounded-[40px] shadow-2xl overflow-y-auto hidden-scrollbar bg-black/40 backdrop-blur-xl border border-white/10 flex flex-col items-center pt-16 pb-12 px-6">
         
         {/* Profile Header */}
-        <div className="relative mb-4">
-          <div className="w-28 h-28 rounded-full border-4 border-white/10 overflow-hidden bg-stone-800 shadow-xl flex items-center justify-center relative z-10">
-             {profile.avatarImage ? (
-                <img src={profile.avatarImage} alt={profile.displayName} className="w-full h-full object-cover" />
-             ) : (
-                <div className="w-full h-full flex items-center justify-center bg-stone-800 text-white text-3xl font-bold uppercase">
-                  {profile.username?.substring(0,2)}
-                </div>
-             )}
-          </div>
+        <div className="relative mb-4 mt-6">
           {profile.isPro && (
-            <div className="absolute bottom-0 right-0 bg-black rounded-full p-[2px] shadow-lg translate-x-1 sm:translate-x-2 z-20">
+            <div className="absolute -top-10 right-0 bg-black rounded-full p-[2px] shadow-lg translate-x-1 sm:translate-x-2 z-20">
               <BadgeCheck className="w-8 h-8 text-[#1da1f2] fill-white" />
             </div>
           )}
         </div>
 
-        <h1 className="text-3xl font-black text-white px-4 text-center tracking-tight mb-2 flex items-center gap-2 drop-shadow-md">
+        <h1 className="text-4xl font-black text-white px-4 text-center tracking-tight mb-2 flex items-center gap-2 drop-shadow-md">
           {profile.displayName || `@${profile.username}`}
         </h1>
         {profile.bio && (

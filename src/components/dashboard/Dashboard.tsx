@@ -205,11 +205,11 @@ export default function Dashboard() {
             
             <div className="bg-[#1C1C1E] p-6 rounded-3xl border border-white/5 space-y-5">
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-5">
                 <div>
                   <label className="block text-sm font-semibold text-stone-300 mb-2">Cover Image</label>
                   <div 
-                    className="w-full h-32 rounded-2xl border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden"
+                    className="w-full h-40 rounded-2xl border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {bgImage ? (
@@ -217,29 +217,11 @@ export default function Dashboard() {
                     ) : (
                       <>
                         <ImageIcon className="w-6 h-6 text-stone-500 mb-2" />
-                        <span className="text-sm font-semibold text-stone-400">Upload cover</span>
+                        <span className="text-sm font-semibold text-stone-400">Upload cover image</span>
                       </>
                     )}
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleImageUpload} />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-stone-300 mb-2">Avatar Profile Image</label>
-                  <div 
-                    className="w-full h-32 rounded-[40px] border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden relative"
-                    onClick={() => avatarInputRef.current?.click()}
-                  >
-                    {avatarImage ? (
-                      <img src={avatarImage} alt="Avatar" className="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-black" />
-                    ) : (
-                      <>
-                        <ImageIcon className="w-6 h-6 text-stone-500 mb-2" />
-                        <span className="text-sm font-semibold text-stone-400">Upload profile image</span>
-                      </>
-                    )}
-                  </div>
-                  <input type="file" ref={avatarInputRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
                 </div>
               </div>
 

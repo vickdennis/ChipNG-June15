@@ -99,45 +99,16 @@ export default function PublicProfile() {
     );
   }
 
-  // Stub data for premium blocks
-  const stubCarouselItems = [
-    { title: "My Preset Pack", price: "$15.00", imageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=300", url: "#" },
-    { title: "1-on-1 Coaching", price: "$150.00", imageUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=300", url: "#" },
-    { title: "Exclusive Vlog", price: "Free", imageUrl: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80&w=300", url: "#" }
-  ];
-
-  const stubMerch = [
-    { name: "Speedy Hoodie", price: "$45.00", imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&q=80&w=300", url: "#" },
-    { name: "Signature Cap", price: "$25.00", imageUrl: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=300", url: "#" }
-  ];
-
   return (
     <PremiumProfileLayout profile={profile} socialLinks={socialLinks}>
-      <FeaturedMediaBlock 
-        title="LATEST LIVESTREAM: INSANE MOMENTS!"
-        thumbnailUrl="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=800"
-        videoUrl="https://youtube.com"
-      />
-      
-      <SwipeableCarousel items={stubCarouselItems} />
-
       {socialLinks.length > 0 && socialLinks.map((link) => (
         <DirectActionLink 
           key={link.id}
           platform={link.platform}
-          label={`Follow on ${link.platform}`}
+          label={`Follow on ${link.platform.charAt(0).toUpperCase() + link.platform.slice(1)}`}
           url={link.url}
         />
       ))}
-
-      {socialLinks.length === 0 && (
-         <DirectActionLink platform="youtube" label="Subscribe on YouTube" url="#" />
-      )}
-
-      <LeadCaptureBlock ctaText={`Join the ${profile.displayName || profile.username} Fan Club`} />
-
-      <MerchStoreBlock products={stubMerch} />
-      
     </PremiumProfileLayout>
   );
 }

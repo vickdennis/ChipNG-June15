@@ -38,7 +38,17 @@ CREATE TABLE analytics (
   referrer TEXT
 );
 
--- RLS SETUP
+-- Storage Bucket Setup for Cover Images
+-- IMPORTANT: You must create a storage bucket in Supabase manually with these configurations.
+-- 1. Go to Storage in your Supabase Dashboard.
+-- 2. Click "New Bucket".
+-- 3. Name it "profile-images" exactly as typed.
+-- 4. Make it "Public".
+-- 5. Set up the following policies for "profile-images" bucket:
+--   a. Allow public to SELECT/read objects
+--   b. Allow authenticated users to INSERT objects
+--   c. Allow users to UPDATE their own objects (auth.uid() = owner)
+--   d. Allow users to DELETE their own objects (auth.uid() = owner)
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analytics ENABLE ROW LEVEL SECURITY;
