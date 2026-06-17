@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Share, ExternalLink, Check, ChevronLeft, Edit2, Plus, Link2, Phone, GripVertical, Download, BadgeCheck } from 'lucide-react';
 import SocialBar from './SocialBar';
+import { getPlatformIcon } from '../../lib/platforms';
 
 interface SmartphoneFrameProps {
   socialLinks?: any[];
@@ -15,6 +16,7 @@ interface SmartphoneFrameProps {
   email?: string;
   address?: string;
   bgImage?: string | null;
+  avatarImage?: string | null;
   isPro?: boolean;
 
   onEditClick?: () => void;
@@ -33,6 +35,7 @@ export default function SmartphoneFrame({
   email = "",
   address = "",
   bgImage = null,
+  avatarImage = null,
   isPro = false,
   onEditClick, 
   onSaveClick 
@@ -88,58 +91,67 @@ export default function SmartphoneFrame({
 
           {/* Header Banner */}
           <div 
-            className={`${isPublicView ? '' : 'mt-4 '}relative w-full h-72 bg-gradient-to-b from-slate-200 to-black shrink-0 flex flex-col items-center justify-center overflow-hidden`}
+            className={`${isPublicView ? '' : 'mt-4 '}relative w-full h-[220px] bg-gradient-to-b from-stone-800 to-black shrink-0 flex flex-col items-center justify-center overflow-visible`}
             style={bgImage ? { backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
           >
              {!bgImage && (
-               <div className="absolute inset-0 flex flex-col items-center justify-center opacity-70 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20">
+               <div className="absolute inset-0 flex flex-col items-center justify-center bg-stone-900 border-b border-stone-800">
                   <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-                  <div className="text-[5rem] font-black tracking-tighter leading-none flex items-start text-white/50 uppercase drop-shadow-2xl mix-blend-overlay">
-                    {username}
-                  </div>
-                  <div className="absolute top-4 right-8 w-24 h-24 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
-                  <div className="absolute top-8 right-12 w-16 h-16 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
-                  <div className="absolute top-12 right-16 w-8 h-8 border-8 border-sky-500 rounded-full border-r-transparent border-b-transparent transform rotate-45 opacity-80"></div>
                </div>
              )}
 
              {/* Banner Action Buttons */}
              {!isPublicView && (
                <>
-                 <button className="absolute top-6 left-5 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors z-20" onClick={onSaveClick}>
-                   <ChevronLeft className="w-5 h-5 text-white/70" />
+                 <button className="absolute top-6 left-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors z-20" onClick={onSaveClick}>
+                   <ChevronLeft className="w-5 h-5 text-white" />
                  </button>
-                 <button className="absolute top-6 right-5 w-10 h-10 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors z-20" onClick={onSaveClick}>
-                   <Check className="w-5 h-5 text-white/70" />
+                 <button className="absolute top-6 right-5 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center hover:bg-black/60 transition-colors z-20" onClick={onSaveClick}>
+                   <Check className="w-5 h-5 text-white" />
                  </button>
-                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <button onClick={onEditClick} className="bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/40 transition-colors flex items-center gap-2">
-                       Change Photo or Video
+                 <div className="absolute inset-x-0 bottom-12 flex items-center justify-center pointer-events-none">
+                    <button onClick={onEditClick} className="bg-black/40 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/10 shadow-xl text-white text-sm font-semibold pointer-events-auto cursor-pointer hover:bg-black/60 transition-colors flex items-center gap-2">
+                       Change Cover
                     </button>
-                 </div>
-                 {/* Blue concentric waves */}
-                 <div className="absolute -top-12 -right-12 w-64 h-64 pointer-events-none opacity-40">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-[12px] border-[#3b82f6] rounded-full"></div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-[12px] border-[#3b82f6] rounded-full"></div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 border-[12px] border-[#3b82f6] rounded-full"></div>
                  </div>
                </>
              )}
           </div>
 
-          <div className="px-5 flex flex-col items-center relative z-10 -mt-6">
+          <div className="px-5 flex flex-col items-center relative z-10 -mt-16">
+             {/* Avatar Profile Picture */}
+            <div className="relative mb-3 group cursor-pointer" onClick={onEditClick}>
+              <div className="w-[120px] h-[120px] rounded-full border-[5px] border-[#0a0a0a] bg-stone-800 shadow-xl overflow-hidden flex items-center justify-center relative z-10">
+                 {avatarImage ? (
+                    <img src={avatarImage} alt="Profile" className="w-full h-full object-cover" />
+                 ) : (
+                    <span className="text-4xl font-bold text-white uppercase">{username.substring(0,2)}</span>
+                 )}
+                 {!isPublicView && (
+                   <div className="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center transition-colors">
+                      <Edit2 className="w-6 h-6 text-white" />
+                   </div>
+                 )}
+              </div>
+              {isPro && (
+                <div className="absolute bottom-2 right-2 bg-black rounded-full p-[2px] shadow-sm z-20">
+                  <BadgeCheck className="w-7 h-7 text-[#1d9bf0] fill-white" />
+                </div>
+              )}
+            </div>
+
             {!isPublicView ? (
               <div 
                 className="text-[1.7rem] font-bold tracking-tight mb-0.5 bg-transparent border-none text-center px-2 cursor-text flex items-center justify-center gap-1.5"
                 onClick={onEditClick}
               >
                 {displayName}
-                {isPro && <BadgeCheck className="w-6 h-6 text-[#3b82f6]" />}
+                {isPro && <BadgeCheck className="w-6 h-6 text-[#1d9bf0] ml-1 fill-white" />}
               </div>
             ) : (
               <h1 className="text-[1.7rem] font-bold tracking-tight mb-0.5 flex items-center justify-center gap-1.5">
                 {displayName}
-                {isPro && <BadgeCheck className="w-6 h-6 text-[#3b82f6]" />}
+                {isPro && <BadgeCheck className="w-6 h-6 text-[#1d9bf0] ml-1 fill-white" />}
               </h1>
             )}
 
@@ -295,10 +307,30 @@ export default function SmartphoneFrame({
                    </div>
                    <div className="flex-1 flex justify-between items-center">
                      <span className="font-bold text-white tracking-wide text-lg">Featured Links</span>
-                     <button className="bg-gradient-to-r from-[#FF5E62] to-[#FF9966] text-white font-bold text-sm uppercase tracking-wider px-6 py-3 rounded-full shadow-lg">
+                     <button className="bg-gradient-to-r from-[#FF5E62] to-[#FF9966] text-white font-bold text-sm uppercase tracking-wider px-6 py-3 rounded-full shadow-lg" onClick={onAddSocialClick}>
                         ADD CONTENT
                      </button>
                    </div>
+                </div>
+              )}
+
+              {/* Big List of Links like Link.me */}
+              {isPublicView && socialLinks.length > 0 && (
+                <div className="flex flex-col gap-3 mt-4">
+                  {socialLinks.map((link) => (
+                    <button 
+                      key={link.id} 
+                      onClick={() => window.open(link.url, '_blank')}
+                      className={`w-full group rounded-full py-4 px-6 flex items-center justify-between transition-transform hover:scale-[1.02] active:scale-[0.98] bg-white text-black font-semibold shadow-xl border border-white/10 relative overflow-hidden`}
+                    >
+                      <div className="flex items-center gap-4 relative z-10 w-full justify-center">
+                        <div className="absolute left-0 w-8 h-8 rounded-full flex items-center justify-center bg-black/5">
+                           {React.createElement(link.icon || getPlatformIcon(link.platform), { className: "w-5 h-5 text-black" })}
+                        </div>
+                        <span className="text-lg tracking-wide capitalize">{link.platform}</span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               )}
             </div>

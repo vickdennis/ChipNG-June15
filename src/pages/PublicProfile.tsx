@@ -36,6 +36,7 @@ export default function PublicProfile() {
             email: data.email,
             address: data.address,
             bgImage: data.cover_image,
+            avatarImage: data.avatar_image,
             isPro: data.is_pro
           });
 
@@ -102,6 +103,7 @@ export default function PublicProfile() {
          email={profile.email}
          address={profile.address}
          bgImage={profile.bgImage}
+         avatarImage={profile.avatarImage}
          isPro={profile.isPro}
          socialLinks={socialLinks} 
        />

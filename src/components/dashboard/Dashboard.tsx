@@ -19,11 +19,13 @@ export default function Dashboard() {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [bgImage, setBgImage] = useState<string | null>(null);
+  const [avatarImage, setAvatarImage] = useState<string | null>(null);
   const [isPro, setIsPro] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   
   const [socialLinks, setSocialLinks] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -45,6 +47,7 @@ export default function Dashboard() {
         setEmail(data.email || '');
         setAddress(data.address || '');
         setBgImage(data.cover_image || null);
+        setAvatarImage(data.avatar_image || null);
         setIsPro(data.is_pro || false);
         setIsAdmin(data.is_admin || false);
       }
@@ -71,6 +74,8 @@ export default function Dashboard() {
       email,
       address,
       username,
+      cover_image: bgImage,
+      avatar_image: avatarImage,
       is_pro: isPro // Mocking ability to toggle it for testing, or simulate subscription
     }).eq('id', userId);
     
@@ -79,20 +84,55 @@ export default function Dashboard() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setBgImage(url);
-      // In a real implementation we would convert this to a file and upload it to Supabase storage
+  const processImageUpload = async (file: File, type: 'avatar' | 'cover') => {
+    if (!userId) return;
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${userId}/${type}-${Math.random()}.${fileExt}`;
+
+      const { data, error: uploadError } = await supabase.storage
+        .from('profile-images')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrlData } = supabase.storage
+        .from('profile-images')
+        .getPublicUrl(filePath);
+
+      if (type === 'avatar') {
+        setAvatarImage(publicUrlData.publicUrl);
+      } else {
+        setBgImage(publicUrlData.publicUrl);
+      }
+    } catch (err: any) {
+      alert('Error uploading image: ' + err.message);
     }
   };
 
-  const handleAddSocialLink = (platform: any, handle: string) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageUpload(file, 'cover');
+    }
+  };
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processImageUpload(file, 'avatar');
+    }
+  };
+
+  const handleAddSocialLink = async (platform: any, handle: string) => {
+    if (!userId) return;
+    
+    // Optimistic insert
+    const newId = Math.random().toString(36).substr(2, 9);
     setSocialLinks(prev => [
       ...prev,
       {
-        id: Math.random().toString(36).substr(2, 9),
+        id: newId,
         platform: platform.name,
         url: platform.baseUrl + handle,
         handle: handle,
@@ -101,6 +141,13 @@ export default function Dashboard() {
         baseUrl: platform.baseUrl
       }
     ]);
+
+    await supabase.from('links').insert({
+      profile_id: userId,
+      platform: platform.name,
+      url: platform.baseUrl + handle,
+      handle: handle
+    });
   };
 
   const activeManageLinks = managePlatform 
@@ -136,22 +183,42 @@ export default function Dashboard() {
             
             <div className="bg-[#1C1C1E] p-6 rounded-3xl border border-white/5 space-y-5">
               
-              <div>
-                <label className="block text-sm font-semibold text-stone-300 mb-2">Cover Image</label>
-                <div 
-                  className="w-full h-32 rounded-2xl border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  {bgImage ? (
-                    <img src={bgImage} alt="Cover" className="w-full h-full object-cover opacity-60" />
-                  ) : (
-                    <>
-                      <ImageIcon className="w-6 h-6 text-stone-500 mb-2" />
-                      <span className="text-sm font-semibold text-stone-400">Click to upload image</span>
-                    </>
-                  )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-stone-300 mb-2">Cover Image</label>
+                  <div 
+                    className="w-full h-32 rounded-2xl border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {bgImage ? (
+                      <img src={bgImage} alt="Cover" className="w-full h-full object-cover opacity-60" />
+                    ) : (
+                      <>
+                        <ImageIcon className="w-6 h-6 text-stone-500 mb-2" />
+                        <span className="text-sm font-semibold text-stone-400">Upload cover</span>
+                      </>
+                    )}
+                  </div>
+                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleImageUpload} />
                 </div>
-                <input type="file" ref={fileInputRef} className="hidden" accept="image/*,video/*" onChange={handleImageUpload} />
+
+                <div>
+                  <label className="block text-sm font-semibold text-stone-300 mb-2">Avatar Profile Image</label>
+                  <div 
+                    className="w-full h-32 rounded-[40px] border-2 border-dashed border-stone-700 bg-stone-900/50 flex flex-col items-center justify-center cursor-pointer hover:border-stone-500 hover:bg-stone-800 transition-colors overflow-hidden relative"
+                    onClick={() => avatarInputRef.current?.click()}
+                  >
+                    {avatarImage ? (
+                      <img src={avatarImage} alt="Avatar" className="w-24 h-24 rounded-full object-cover shadow-lg border-2 border-black" />
+                    ) : (
+                      <>
+                        <ImageIcon className="w-6 h-6 text-stone-500 mb-2" />
+                        <span className="text-sm font-semibold text-stone-400">Upload profile image</span>
+                      </>
+                    )}
+                  </div>
+                  <input type="file" ref={avatarInputRef} className="hidden" accept="image/*" onChange={handleAvatarUpload} />
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -361,6 +428,7 @@ export default function Dashboard() {
              bio={bio}
              phone={phone}
              bgImage={bgImage}
+             avatarImage={avatarImage}
              isPro={isPro}
              socialLinks={socialLinks} 
              onAddSocialClick={() => setDrawerOpen(true)} 
@@ -377,7 +445,10 @@ export default function Dashboard() {
         onClose={() => setManagePlatform(null)} 
         platform={managePlatform || ''}
         links={activeManageLinks}
-        onRemove={(id) => setSocialLinks(prev => prev.filter(l => l.id !== id))}
+        onRemove={async (id) => {
+           setSocialLinks(prev => prev.filter(l => l.id !== id));
+           await supabase.from('links').delete().eq('id', id);
+        }}
         onEdit={(link) => {
            setManagePlatform(null);
            setDrawerOpen(true);
